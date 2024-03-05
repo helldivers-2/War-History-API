@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PlanetStatusController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return "This service is for API requests only. Contact helldivers@kejax.net for further information<br>This Service is not endorsed by, neither affiliated with Arrow Games Studios or Playstation Studios in any way";
 });
+
+

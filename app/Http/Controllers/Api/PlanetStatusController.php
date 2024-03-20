@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PlanetStatus;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
+use function Laravel\Prompts\error;
 
 class PlanetStatusController extends Controller
 {
@@ -31,23 +35,35 @@ class PlanetStatusController extends Controller
 
     }
 
+    public function planetsAtTime(Request $request) {
+
+        $request->validate([
+            'time' => ['date']
+        ]);
+
+        $planets = PlanetStatus::getAtTime(Carbon::parse($request->input('time')));
+
+        return response()->json($planets, 200);
+    }
+
     public function latestPlanets(Request $request) {
 
-        $warId = PlanetStatus::max('warId');
+        $request->validate([
+            'time' => ['nullable', 'date']
+        ]);
 
-        $planetsData = DB::select("SELECT b.`index`, `owner`, `health`, `regenPerSecond`, `players`, b.`created_at` FROM planet_statuses b JOIN (SELECT t.`index`, MAX(t.`created_at`) as created_at FROM planet_statuses t GROUP BY `index`) as indexes ON b.`index` = indexes.`index` AND b.created_at = indexes.`created_at`");
+        if ($request->has('time')) {
 
-        $planets = PlanetStatus::hydrate($planetsData);
-
-        //$planets = PlanetStatus::where('warId', $warId)->latest()->groupBy('index')->distinct('index')->get();
-
-        if ($planets) {
-            return response()->json($planets, 200);
-        } else {
-            return response()->json([
-                'error' => 'Planets not found',
-                'code' => 404,
-            ], 404);
         }
+
+        $planet_list = DB::table('planet_statuses')->select('index')->distinct()->get();
+
+        $planets = new Collection();
+
+        foreach ($planet_list as $planet_index) {
+            $planets->push(PlanetStatus::where('index', $planet_index->index)->latest()->first());
+        }
+
+        return response()->json($planets, 200);
     }
 }

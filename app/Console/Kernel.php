@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
 
             }
 
-        })->everyFifteenMinutes();
+        })->everyThirtyMinutes();
     }
 
     /**

@@ -20,4 +20,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/planet', [PlanetStatusController::class, 'index']);
+
 Route::get('/planets', [PlanetStatusController::class, 'latestPlanets']);
+Route::get('/planets/at', [PlanetStatusController::class, 'planetsAtTime']);

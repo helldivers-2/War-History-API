@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,9 +26,16 @@ class PlanetStatus extends Model
     //     'id'
     // ];
 
-    // public static function boot() {
-    //     static::creating(function ($model) {
-    //         $model->created_at = now()->timestamp;
-    //     });
-    // }
+    static function getAtTime(Carbon $datetime) {
+
+        $planet_list = PlanetStatus::select('index')->distinct()->get();
+
+        $planets = new Collection();
+
+        foreach ($planet_list as $planet_index) {
+            $planets->push(PlanetStatus::where('index', $planet_index->index)->where('created_at', '<=', $datetime)->latest()->first());
+        }
+
+        return $planets;
+    }
 }

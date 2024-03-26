@@ -9,4 +9,4 @@ If you want to contribute features to the API, just fork the repository and open
 - Add SwaggerUI and OpenAPI docs
 
 ## License
-This project is providided under the MIT license, which allows you to do all kind of stuff that you want to do, as long as you include the copyright and the LICENSE in your copy
+This project is provided under the MIT license, which allows you to do all kind of stuff that you want to do, as long as you include the copyright and the LICENSE in your copy

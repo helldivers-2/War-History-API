@@ -3,26 +3,22 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\PlanetStatus;
+use App\Models\Planet;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-
-use function Laravel\Prompts\error;
 
 class PlanetStatusController extends Controller
 {
     public function index(Request $request) {
 
         $request->validate([
-            'planetIndex' => ['integer', 'required']
+            'index' => ['integer', 'required']
         ]);
 
-        $planetIndex = $request->input('planetIndex');
+        $planetIndex = $request->input('index');
 
-        $warId = PlanetStatus::max('warId');
-        $planet = PlanetStatus::latest()->where([['warId', $warId], ['index', $planetIndex]])->first();
+        $planet = Planet::where('index', $planetIndex);
 
         if ($planet) {
             return response()->json($planet, 200);
@@ -41,39 +37,18 @@ class PlanetStatusController extends Controller
             'time' => ['date']
         ]);
 
-        $planets = PlanetStatus::getAtTime(Carbon::parse($request->input('time')));
+        $time = Carbon::parse($request->input('time'));
 
-        return response()->json($planets, 200);
+        $planets = Planet::with(['history' => function (Builder $q) use ($time) {
+            $q->latest()->where('created_at', '<', $time)->limit(1);
+        }])->get();
+
+        return response()->json($planets->pluck('history')->OneEntryArrayList(), 200);
     }
 
     public function latestPlanets(Request $request) {
 
-
-        #$planet_list = DB::table('planet_statuses')->select('index')->distinct()->get();
-
-        // $planets = DB::table('planet_statuses')
-        //     ->select('index', DB::raw('MAX(created_at) as max_created_at'))
-        //     ->groupBy('index')
-        //     ->get();
-
-        // $planets = DB::table('planet_statuses')
-        //     ->where('index', $planets->pluck('index'))
-        //     ->where('created_at', $planets->pluck('created_at'))
-        //     ->get();
-
-        // $planets = PlanetStatus::hydrate($planets->all());
-
-        $planetsData = DB::select("SELECT b.`index`, `owner`, `health`, `regenPerSecond`, `players`, b.`created_at` FROM planet_statuses b JOIN (SELECT t.`index`, MAX(t.`created_at`) as created_at FROM planet_statuses t GROUP BY `index`) as indexes ON b.`index` = indexes.`index` AND b.created_at = indexes.`created_at`");
-
-        $planets = PlanetStatus::hydrate($planetsData);
-
-        #$planets = new Collection();
-
-        #$planets= PlanetStatus::whereIn('index', [1, 2, 3, 4])->latest()->distinct()->get();
-
-        #foreach ($planet_list as $planet_index) {
-            //$planets->push(PlanetStatus::whereIn('index', [1, 2, 3, 4])->latest()->get());
-        #}
+        $planets = Planet::all();
 
         return response()->json($planets, 200);
     }

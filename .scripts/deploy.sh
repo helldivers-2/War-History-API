@@ -19,10 +19,10 @@ php artisan clear-compiled
 php artisan optimize
 
 # install npm packages
-npm install
+#npm install
 
 # Compile npm assets
-npm run build
+#npm run build
 
 # Migrate the database
 php artisan migrate --force

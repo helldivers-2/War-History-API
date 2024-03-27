@@ -40,7 +40,7 @@ class PlanetStatusController extends Controller
         $time = Carbon::parse($request->input('time'));
 
         $planets = Planet::with(['history' => function (Builder $q) use ($time) {
-            $q->latest()->where('created_at', '<', $time)->limit(1);
+            $q->latest()->where('updated_at', '<', $time)->limit(1);
         }])->get();
 
         return response()->json($planets->pluck('history')->OneEntryArrayList(), 200);

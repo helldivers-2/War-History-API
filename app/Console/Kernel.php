@@ -37,7 +37,14 @@ class Kernel extends ConsoleKernel
                     $planetModel->fill($planet);
                     $planetModel->save();
 
-                    PlanetHistory::create($planet);
+                    $history = PlanetHistory::orderBy('updated_at', 'DESC')->where('index', $planet['index'])->first();
+
+                    if ($history && $history->toArray() == $planet) {
+                        $history->touch();
+                    } else {
+                        PlanetHistory::create($planet);
+                    }
+
                 }
 
             }

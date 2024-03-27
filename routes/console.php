@@ -35,12 +35,19 @@ Artisan::command('fetch', function () {
         foreach ($data['planetStatus'] as $planet) {
 
             $planet['warId'] = $currentWarId;
+            $planet['regenPerSecond'] = round($planet['regenPerSecond'], 4);
 
             $planetModel = Planet::firstOrNew(['index' => $planet['index']]);
             $planetModel->fill($planet);
             $planetModel->save();
 
-            PlanetHistory::create($planet);
+            $history = PlanetHistory::orderBy('updated_at', 'DESC')->where('index', $planet['index'])->first();
+
+            if ($history && $history->makeHidden(['created_at', 'updated_at', 'id'])->toArray() == $planet) {
+                $history->touch();
+            } else {
+                PlanetHistory::create($planet);
+            }
         }
 
     }

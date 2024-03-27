@@ -24,6 +24,11 @@ class Planet extends Model
         'created_at'
     ];
 
+    protected $hidden = [
+        'created_at',
+        'index'
+    ];
+
     public function history() {
         return $this->hasMany(PlanetHistory::class, 'index', 'index');
     }

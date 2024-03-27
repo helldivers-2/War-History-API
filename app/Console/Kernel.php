@@ -6,6 +6,7 @@ use App\Models\Planet;
 use App\Models\PlanetHistory;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 
 class Kernel extends ConsoleKernel
@@ -19,37 +20,9 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->call(function() {
 
-            // Get current War ID
-            $warIdRequest = Http::get('https://api.live.prod.thehelldiversgame.com/api/WarSeason/current/'); // TODO
+            Artisan::call('fetch');
 
-            $currentWarId = 801; // TODO
-
-            $planetRequest = Http::get('https://api.live.prod.thehelldiversgame.com/api/WarSeason/801/Status');
-
-            if ($planetRequest->successful()) {
-                $data = $planetRequest->json();
-
-                foreach ($data['planetStatus'] as $planet) {
-
-                    $planet['warId'] = $currentWarId;
-
-                    $planetModel = Planet::firstOrNew(['index' => $planet['index']]);
-                    $planetModel->fill($planet);
-                    $planetModel->save();
-
-                    $history = PlanetHistory::orderBy('updated_at', 'DESC')->where('index', $planet['index'])->first();
-
-                    if ($history && $history->toArray() == $planet) {
-                        $history->touch();
-                    } else {
-                        PlanetHistory::create($planet);
-                    }
-
-                }
-
-            }
-
-        })->everyThirtyMinutes();
+        })->everyFifteenMinutes();
     }
 
     /**

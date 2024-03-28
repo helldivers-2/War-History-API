@@ -2,12 +2,9 @@
 
 namespace App\Console;
 
-use App\Models\Planet;
-use App\Models\PlanetHistory;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Http;
 
 class Kernel extends ConsoleKernel
 {

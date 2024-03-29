@@ -48,7 +48,7 @@ Artisan::command('fetch', function () {
                 $history->touch();
             } else {
                 PlanetHistory::create($planet);
-                Log::debug($history);
+                Log::debug($history->toArray());
                 Log::debug(print_r($planet));
             }
         }

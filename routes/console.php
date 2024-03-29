@@ -5,6 +5,7 @@ use App\Models\PlanetHistory;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,11 +24,11 @@ Artisan::command('inspire', function () {
 
 Artisan::command('fetch', function () {
     // Get current War ID
-    $warIdRequest = Http::get('https://api.live.prod.thehelldiversgame.com/api/WarSeason/current/'); // TODO
+    $warIdRequest = Http::get('https://api.live.prod.thehelldiversgame.com/api/WarSeason/current/WarId'); // TODO
 
-    $currentWarId = 801; // TODO
+    $currentWarId = $warIdRequest->json()['id'];
 
-    $planetRequest = Http::get('https://api.live.prod.thehelldiversgame.com/api/WarSeason/801/Status');
+    $planetRequest = Http::get("https://api.live.prod.thehelldiversgame.com/api/WarSeason/$currentWarId/Status");
 
     if ($planetRequest->successful()) {
         $data = $planetRequest->json();
@@ -47,6 +48,8 @@ Artisan::command('fetch', function () {
                 $history->touch();
             } else {
                 PlanetHistory::create($planet);
+                Log::debug($history);
+                Log::debug(print_r($planet));
             }
         }
 

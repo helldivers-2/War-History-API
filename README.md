@@ -7,6 +7,9 @@ If you want to contribute features to the API, just fork the repository and open
 
 ## Todos
 - Add SwaggerUI and OpenAPI docs
+- Add history of Major Orders
+- Add history of Planet Defend Missions
+- Add history of War Summary
 
 ## License
 This project is provided under the MIT license, which allows you to do all kind of stuff that you want to do, as long as you include the copyright and the LICENSE in your copy

@@ -9,6 +9,8 @@ class PlanetHistory extends Model
 {
     use HasFactory;
 
+    public $timestamps = true;
+
     protected $table = 'planet_histories';
 
     protected $fillable = [
@@ -18,7 +20,5 @@ class PlanetHistory extends Model
         'health',
         'regenPerSecond',
         'players',
-        'created_at',
-        'updated_at'
     ];
 }

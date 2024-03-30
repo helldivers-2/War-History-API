@@ -44,7 +44,12 @@ Artisan::command('fetch', function () {
 
             $history = PlanetHistory::orderBy('updated_at', 'DESC')->where('index', $planet['index'])->first();
 
-            if ($history && $history->makeHidden(['created_at', 'updated_at', 'id'])->toArray() == $planet) {
+            if ($history && (
+                $history->owner == $planet['owner'] &&
+                $history->health == $planet['health'] &&
+                round($history->regenPerSecond, 2) == round($planet['regenPerSecond'], 2) &&
+                $history->players == $planet['players']
+            )) {
                 $history->touch();
             } else {
                 PlanetHistory::create($planet);

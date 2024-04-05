@@ -59,8 +59,9 @@ Artisan::command('fetch', function () {
             )) {
                 $history->touch();
             } else {
-                PlanetHistory::create($planet)
+                PlanetHistory::create($planet);
             }
+
         }
 
         // Mark old campaigns as marked if they're not in the array

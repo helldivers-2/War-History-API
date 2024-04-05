@@ -59,7 +59,7 @@ Artisan::command('fetch', function () {
             )) {
                 $history->touch();
             } else {
-                PlanetHistory::create($planet);
+                PlanetHistory::create($planet)
             }
         }
 

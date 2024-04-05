@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\PlanetStatusController;
+use App\Http\Controllers\PlanetCampaignController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,3 +25,9 @@ Route::post('/planet', [PlanetStatusController::class, 'index']);
 Route::get('/planets', [PlanetStatusController::class, 'latestPlanets']);
 
 Route::get('/planets/at', [PlanetStatusController::class, 'planetsAtTime']);
+
+Route::get('/planets/active', [PlanetStatusController::class, 'activeCampaigns']);
+
+Route::get('/campaigns', [PlanetCampaignController::class, 'index']);
+
+Route::get('/campaigns/active', [PlanetCampaignController::class, 'active']);

@@ -26,10 +26,13 @@ class Planet extends Model
 
     protected $hidden = [
         'created_at',
-        'index'
     ];
 
     public function history() {
         return $this->hasMany(PlanetHistory::class, 'index', 'index');
+    }
+
+    public function campaigns() {
+        return $this->hasMany(PlanetCampaign::class, 'planetIndex', 'index');
     }
 }

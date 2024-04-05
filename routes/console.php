@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\Planet;
+use App\Models\PlanetCampaign;
 use App\Models\PlanetHistory;
+use Carbon\Carbon;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
@@ -28,11 +30,16 @@ Artisan::command('fetch', function () {
 
     $currentWarId = $warIdRequest->json()['id'];
 
-    $planetRequest = Http::get("https://api.live.prod.thehelldiversgame.com/api/WarSeason/$currentWarId/Status");
+    $planetRequest = Http::withHeaders([
+        'Accept-Language' => 'en-EN'
+    ])->get("https://api.live.prod.thehelldiversgame.com/api/WarSeason/$currentWarId/Status");
 
     if ($planetRequest->successful()) {
         $data = $planetRequest->json();
 
+        /* ----- Set the current PlanetStatus ----- */
+
+        // Set default information
         foreach ($data['planetStatus'] as $planet) {
 
             $planet['warId'] = $currentWarId;
@@ -53,9 +60,34 @@ Artisan::command('fetch', function () {
                 $history->touch();
             } else {
                 PlanetHistory::create($planet);
-                Log::debug($history->toArray());
-                Log::debug(print_r($planet));
             }
+        }
+
+        // Mark old campaigns as marked if they're not in the array
+        $oldCampaigns = PlanetCampaign::where('ended_at', null);
+        $newCampaignIds = collect($data['campaigns'])->pluck('id')->all();
+
+        foreach ($oldCampaigns as $oldCampaign) {
+            if (!in_array($oldCampaign->id, $newCampaignIds)) {
+                $oldCampaign->ended_at = now();
+            }
+        }
+
+        // Check for planet campaigns and add them
+        foreach ($data['campaigns'] as $dataCampaign) {
+
+            $planetCampaign = PlanetCampaign::where('id', $dataCampaign['id'])->first();
+
+            // Check if the campaign is new or an old one
+            if ($planetCampaign == null) {
+
+                // Merge war id into the array and create a new PlanetCampaign with it
+                $dataCampaign['warId'] = $currentWarId;
+
+                PlanetCampaign::create($dataCampaign);
+
+            }
+
         }
 
     }

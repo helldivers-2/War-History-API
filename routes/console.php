@@ -65,7 +65,7 @@ Artisan::command('fetch', function () {
         }
 
         // Mark old campaigns as marked if they're not in the array
-        $oldCampaigns = PlanetCampaign::where('ended_at', null);
+        $oldCampaigns = PlanetCampaign::where('ended_at', null)->get();
         $newCampaignIds = collect($data['campaigns'])->pluck('id')->all();
 
         foreach ($oldCampaigns as $oldCampaign) {

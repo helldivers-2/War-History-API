@@ -71,6 +71,7 @@ Artisan::command('fetch', function () {
         foreach ($oldCampaigns as $oldCampaign) {
             if (!in_array($oldCampaign->id, $newCampaignIds)) {
                 $oldCampaign->ended_at = now();
+                $oldCampaign->save();
             }
         }
 

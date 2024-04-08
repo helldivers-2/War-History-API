@@ -61,6 +61,7 @@ Artisan::command('fetch', function () {
             } else {
                 PlanetHistory::create($planet);
             }
+
         }
 
         // Mark old campaigns as marked if they're not in the array

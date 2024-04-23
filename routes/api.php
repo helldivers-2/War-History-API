@@ -31,3 +31,5 @@ Route::get('/planets/active', [PlanetStatusController::class, 'activeCampaigns']
 Route::get('/campaigns', [PlanetCampaignController::class, 'index']);
 
 Route::get('/campaigns/active', [PlanetCampaignController::class, 'active']);
+
+Route::get('/players', [PlanetStatusController::class, 'playersGlobal']);

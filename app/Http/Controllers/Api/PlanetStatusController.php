@@ -88,4 +88,26 @@ class PlanetStatusController extends Controller
         }
 
     }
+
+    public function playersGlobal(Request $request) {
+
+        $data = $request->validate([
+            "time" => ["nullable", "date"]
+        ]);
+
+        if (!$request->has('time')) {
+            $time = Carbon::now();
+        } else {
+            $time = Carbon::parse($data['time']);
+        }
+
+        $players = Planet::with(['history' => function (Builder $q) use ($time) {
+            $q->latest()->where('created_at', '<', $time)->limit(1);
+        }])->sum('players');
+
+        return response()->json([
+            "count" => $players
+        ], 200);
+
+    }
 }

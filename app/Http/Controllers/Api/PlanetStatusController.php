@@ -107,11 +107,7 @@ class PlanetStatusController extends Controller
             $q->latest()->where('created_at', '<', $time)->limit(1);
         }])->get();
 
-        // TODO! Fix how the player count is fetched
-        #error_log($planets->pluck('history'));
         $players = $planets->pluck('history')->OneEntryArrayList()->sum('players');
-
-        #error_log(print_r($planets->pluck('history')->OneEntryArrayList()->sum('players')));
 
         return response()->json([
             "count" => $players

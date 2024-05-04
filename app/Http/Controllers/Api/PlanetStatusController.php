@@ -97,13 +97,17 @@ class PlanetStatusController extends Controller
 
         if (!$request->has('time')) {
             $time = Carbon::now();
+            error_log($time);
         } else {
             $time = Carbon::parse($data['time']);
+            error_log($time);
         }
 
-        $players = Planet::with(['history' => function (Builder $q) use ($time) {
+        $planets = Planet::with(['history' => function (Builder $q) use ($time) {
             $q->latest()->where('created_at', '<', $time)->limit(1);
-        }])->sum('players');
+        }])->get();
+
+        $players = $planets->pluck('history')->OneEntryArrayList()->sum('players');
 
         return response()->json([
             "count" => $players

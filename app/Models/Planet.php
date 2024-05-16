@@ -17,6 +17,7 @@ class Planet extends Model
 
     protected $fillable = [
         'index',
+        'warId',
         'owner',
         'health',
         'regenPerSecond',

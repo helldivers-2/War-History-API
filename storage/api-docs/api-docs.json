@@ -1,0 +1,370 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Helldivers 2 War History API",
+        "contact": {
+            "name": "Kejax",
+            "email": "kejax@kejax.net"
+        },
+        "version": "0.0.6"
+    },
+    "paths": {
+        "/api/planet/{planet_index}": {
+            "get": {
+                "tags": [
+                    "Planets"
+                ],
+                "summary": "Returns the current status of the specified planet",
+                "operationId": "52261962e5077d101e265d5662db30e5",
+                "parameters": [
+                    {
+                        "name": "planet_index",
+                        "in": "path",
+                        "description": "The index of the requested planet",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The Planet has been found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanetHistory"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The planet has not been found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Planet not found"
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation of your request failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Planet not found"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "planet_index": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The planet index field must be an integer."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/planet/{planet_index}/history": {
+            "get": {
+                "tags": [
+                    "Planets"
+                ],
+                "summary": "returns the history",
+                "operationId": "d779e6a9ac6ec164e55580aa5833c7a1",
+                "responses": {
+                    "200": {
+                        "description": "Returns the history of a planet",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PlanetHistory"
+                                            }
+                                        },
+                                        "size": {
+                                            "type": "integer",
+                                            "example": 50
+                                        },
+                                        "previous_page_url": {
+                                            "type": "string",
+                                            "example": "https://  api-helldivers.kejax.net/api/planet/0/history?cursor=eyJwbGFuZXRfaGlzdG9yaWVzLmlkIjo0ODQsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/planets": {
+            "get": {
+                "tags": [
+                    "Planets"
+                ],
+                "summary": "Returns all currently valid PlanetHistory or to that specific time, if `time` query is present",
+                "operationId": "ae6322bb372656a19a0488c5c1d379f1",
+                "parameters": [
+                    {
+                        "name": "time",
+                        "in": "query",
+                        "description": "The time to query",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The Planet has been found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/PlanetHistory"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No valid entries have been found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "No valid entries could be found for this time"
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation of your request failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Planet not found"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "time": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The time field must be an integer."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/planets/active": {
+            "get": {
+                "tags": [
+                    "Planets"
+                ],
+                "summary": "Returns planets with active campaigns",
+                "operationId": "797a772aa99f30d0fb19a906d0d106d7",
+                "responses": {
+                    "200": {
+                        "description": "Planets with active campaigns",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "allOf": [
+                                            {
+                                                "$ref": "#/components/schemas/Planet"
+                                            },
+                                            {
+                                                "properties": {
+                                                    "campaigns": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "$ref": "#/components/schemas/PlanetCampaign"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Planet": {
+                "title": "Planet",
+                "properties": {
+                    "index": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "warId": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "owner": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "health": {
+                        "type": "number",
+                        "example": 0
+                    },
+                    "regenPerSecond": {
+                        "type": "number",
+                        "example": 19
+                    },
+                    "players": {
+                        "type": "integer",
+                        "example": 53000
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2024-06-12T16:23:24Z"
+                    }
+                },
+                "type": "object"
+            },
+            "PlanetCampaign": {
+                "title": "PlanetCampaign",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "planetIndex": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "type": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "count": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "warId": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "ended_at": {
+                        "type": "string",
+                        "example": "2024-06-14T16:31:30Z",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "example": "2024-06-14T16:31:30Z"
+                    }
+                },
+                "type": "object"
+            },
+            "PlanetHistory": {
+                "title": "PlanetHistory",
+                "properties": {
+                    "index": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "warId": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "owner": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "health": {
+                        "type": "number",
+                        "example": 0
+                    },
+                    "regenPerSecond": {
+                        "type": "number",
+                        "example": 19
+                    },
+                    "players": {
+                        "type": "integer",
+                        "example": 53000
+                    },
+                    "created_at": {
+                        "description": "The time that specific entry was created",
+                        "type": "string",
+                        "example": "2024-06-12T16:23:24Z"
+                    },
+                    "updated_at": {
+                        "description": "Last time this entry was updated. Can be newer than \"last_valid\" due to migrations",
+                        "type": "string",
+                        "example": "2024-06-12T16:23:24Z"
+                    },
+                    "valid_start": {
+                        "description": "The time that specific entry started being valid",
+                        "type": "integer",
+                        "example": 1711573202
+                    },
+                    "last_valid": {
+                        "description": "last time the entry was valid",
+                        "type": "integer",
+                        "example": 1711574101
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}

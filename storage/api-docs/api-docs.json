@@ -93,6 +93,14 @@
                 ],
                 "summary": "returns the history",
                 "operationId": "d779e6a9ac6ec164e55580aa5833c7a1",
+                "parameters": [
+                    {
+                        "name": "planet_index",
+                        "in": "path",
+                        "description": "The index of the requested planet",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Returns the history of a planet",

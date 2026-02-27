@@ -31,7 +31,7 @@ class migrate_planet_history_fix extends Command
         if ($this->argument('id') == null)
         {
 
-            PlanetHistory::where('id', '>=', 416426)->chunk(100, function($models) {
+            PlanetHistory::where('id', '>=', 0)->chunk(100, function($models) {
 
                 foreach($models as $model) {
                     $p = PlanetHistory::where('id', '>', $model->id)->where('index', $model->index)->orderBy('id', 'ASC')->first();

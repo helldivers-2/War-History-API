@@ -88,18 +88,26 @@ class PlanetStatusController extends Controller
 
         $request->validate([
             'planet_index' => ['integer', 'required'],
-            'time' => ['date', 'nullable']
+            'time' => ['integer', 'nullable']
         ]);
 
-        $time = $request->input('time') ? Carbon::parse($request->input('time')) : Carbon::now();
+        $time = $request->input('time') ? Carbon::createFromTimestamp($request->input('time')) : Carbon::now();
 
         error_log($time);
 
         $planetIndex = $request->input('planet_index');
 
-        $planet = PlanetHistory::where('index', $planetIndex)
-            ->where('updated_at', '<=', $time)
-            ->orderBy('updated_at');
+        error_log($planetIndex);
+
+        $planet = PlanetHistory::where([
+                ['valid_start', '<=', $time->getTimestamp()],
+                ['last_valid', '>=', $time->getTimestamp()],
+                ['index', $planetIndex]
+            ])->orWhere([
+                ['valid_start', '<=', $time->getTimestamp()],
+                ['index', $planetIndex],
+                ['last_valid', 0]
+            ]);
 
         error_log($planet->toSql());
 
@@ -118,6 +126,14 @@ class PlanetStatusController extends Controller
         path: '/api/planet/{planet_index}/history',
         summary: 'returns the history',
         tags: ['Planets'],
+        parameters: [
+            new OA\Parameter(
+                name: 'planet_index',
+                in: 'path',
+                required: true,
+                description: 'The index of the requested planet'
+            )
+        ],
         responses: [
             new OA\Response(
                 description: 'Returns the history of a planet',
@@ -262,8 +278,19 @@ class PlanetStatusController extends Controller
 
         $time = ($request->input('time') ? Carbon::createFromTimeStamp($request->input('time')) : Carbon::now());
 
-        $planets = Planet::with(['history' => function (Builder $q) use ($time) {
-            $q->latest()->whereBetween(DB::raw($time->getTimestamp()), [DB::raw('valid_start'), DB::raw('last_valid')])->orWhereBetween('valid_start', [$time->getTimestamp(), $time->subMinutes(30)->getTimestamp()])->limit(1);
+        //$planets = Planet::with(['history' => function (Builder $q) use ($time) {
+        //    $q->latest()->whereBetween(DB::raw($time->getTimestamp()), [DB::raw('valid_start'), DB::raw('last_valid')])->orWhereBetween('valid_start', [$time->getTimestamp(), $time->subMinutes(30)->getTimestamp()])->limit(1);
+        //}])->get();
+
+        $planets = Planet::with(['history' => function (Builder $q) use ($time)
+        {
+            $q->latest()->where([
+                ['valid_start', '<=', $time->getTimestamp()],
+                ['last_valid', '>=', $time->getTimestamp()]
+            ])->orWhere([
+                ['valid_start', '<=', $time->getTimestamp()],
+                ['last_valid', 0]
+            ]);
         }])->get();
 
         //error_log(print_r($planets));

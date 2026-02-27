@@ -67,11 +67,11 @@ class migrate_planet_history_fix extends Command
             $model->valid_start = $model->created_at->getTimestamp();
             $model->save();
             $this->info($model->id.' | '.$model->valid_start.' | '.$model->last_valid);
-        } else if ($this->argument('id') == 0)
+        } else if ($this->argument('id') == '+' && $this->argument('mode') != null)
         {
 
 
-            PlanetHistory::where('last_valid', 0)->chunk(100, function($models) {
+            PlanetHistory::where('id', '>=', $this->argument('mode'))->chunk(100, function($models) {
 
                 foreach($models as $model) {
                     $p = PlanetHistory::where('id', '>', $model->id)->where('index', $model->index)->orderBy('id', 'ASC')->first();

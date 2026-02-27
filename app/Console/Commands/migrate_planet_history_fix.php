@@ -13,7 +13,7 @@ class migrate_planet_history_fix extends Command
      *
      * @var string
      */
-    protected $signature = 'app:migrate_planet_history_fix {id?}';
+    protected $signature = 'app:migrate_planet_history_fix {id?} {mode?}';
 
     /**
      * The console command description.

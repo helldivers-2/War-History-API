@@ -4,8 +4,10 @@ use App\Models\Planet;
 use App\Models\PlanetCampaign;
 use App\Models\PlanetHistory;
 use Carbon\Carbon;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -26,7 +28,7 @@ Artisan::command('inspire', function () {
 
 Artisan::command('fetch', function () {
     // Get current War ID
-    $warIdRequest = Http::get('https://api.live.prod.thehelldiversgame.com/api/WarSeason/current/WarId'); // TODO
+    $warIdRequest = Http::get('https://api.live.prod.thehelldiversgame.com/api/WarSeason/current/WarId');
 
     $currentWarId = $warIdRequest->json()['id'];
 
@@ -36,6 +38,7 @@ Artisan::command('fetch', function () {
 
     if ($planetRequest->successful()) {
         $data = $planetRequest->json();
+
 
         /* ----- Set the current PlanetStatus ----- */
 
@@ -59,10 +62,27 @@ Artisan::command('fetch', function () {
             )) {
                 $history->touch();
             } else {
-                PlanetHistory::create($planet);
+                $c = Carbon::now()->getTimestamp();
+                $p = new PlanetHistory($planet);
+                $p->valid_start = $c;
+                $p->last_valid = $c;
             }
 
         }
+
+
+        // Cache the newest global player count
+        $playerPlanets = Planet::with(['history' => function (Builder $q) {
+            $q->latest()->where('players', '<', 0)->limit(1);
+        }])->get();
+
+        $players = $playerPlanets->pluck('history')->OneEntryArrayList()->sum('players');
+
+        Cache::forget('global_player_count');
+        Cache::put('global_player_count', $players, 900);
+
+
+        /* ----- Set Campaign Status ----- */
 
         // Mark old campaigns as marked if they're not in the array
         $oldCampaigns = PlanetCampaign::where('ended_at', null)->get();
@@ -72,6 +92,8 @@ Artisan::command('fetch', function () {
             if (!in_array($oldCampaign->id, $newCampaignIds)) {
                 $oldCampaign->ended_at = now();
                 $oldCampaign->save();
+            } else {
+                $oldCampaign->touch();
             }
         }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ApiRequest;
 use App\Models\Planet;
 use App\Models\PlanetCampaign;
 use App\Models\PlanetHistory;
@@ -39,6 +40,8 @@ Artisan::command('fetch', function () {
     if ($planetRequest->successful()) {
         $data = $planetRequest->json();
 
+        //ApiRequest::create(['data' => $data]);
+
 
         /* ----- Set the current PlanetStatus ----- */
 
@@ -63,6 +66,7 @@ Artisan::command('fetch', function () {
                 $history->players == $planet['players']
             )) {
                 $history->touch();
+                $history->last_valid = Carbon::now()->getTimestamp();
             } else {
                 $c = Carbon::now()->getTimestamp();
                 $p = new PlanetHistory($planet);

@@ -93,11 +93,11 @@ class PlanetStatusController extends Controller
 
         $time = $request->input('time') ? Carbon::createFromTimestamp($request->input('time')) : Carbon::now();
 
-        error_log($time);
+        //error_log($time);
 
         $planetIndex = $request->input('planet_index');
 
-        error_log($planetIndex);
+        //error_log($planetIndex);
 
         $planet = PlanetHistory::where([
                 ['valid_start', '<=', $time->getTimestamp()],
@@ -109,7 +109,7 @@ class PlanetStatusController extends Controller
                 ['last_valid', 0]
             ]);
 
-        error_log($planet->toSql());
+        //error_log($planet->toSql());
 
         if ($planet->first()) {
             return response()->json($planet->first(), 200);

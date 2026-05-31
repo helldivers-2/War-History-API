@@ -71,7 +71,7 @@ Artisan::command('fetch', function () {
                 $c = Carbon::now()->getTimestamp();
                 $p = new PlanetHistory($planet);
                 $p->valid_start = $c;
-                $p->last_valid = null;
+                $p->last_valid = 0;
 
                 if ($history) $history->last_valid = $c - 1;
 

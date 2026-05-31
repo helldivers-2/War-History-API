@@ -65,9 +65,13 @@ Artisan::command('fetch', function () {
                 round($history->regenPerSecond, 2) == round($planet['regenPerSecond'], 2) &&
                 $history->players == $planet['players']
             )) {
+                $this->info('leave '.$planet['index']);
                 $history->touch();
                 $history->last_valid = 0;
             } else {
+
+                $this->info('update '.$planet['index']);
+
                 $c = Carbon::now()->getTimestamp();
                 $p = new PlanetHistory($planet);
                 $p->valid_start = $c;

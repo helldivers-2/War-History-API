@@ -66,7 +66,7 @@ Artisan::command('fetch', function () {
                 $history->players == $planet['players']
             )) {
                 $history->touch();
-                $history->last_valid = Carbon::now()->getTimestamp();
+                //$history->last_valid = Carbon::now()->getTimestamp();
             } else {
                 $c = Carbon::now()->getTimestamp();
                 $p = new PlanetHistory($planet);

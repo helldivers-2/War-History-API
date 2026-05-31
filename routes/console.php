@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ApiRequest;
 use App\Models\Planet;
 use App\Models\PlanetCampaign;
 use App\Models\PlanetHistory;
@@ -39,11 +40,15 @@ Artisan::command('fetch', function () {
     if ($planetRequest->successful()) {
         $data = $planetRequest->json();
 
+        //ApiRequest::create(['data' => $data]);
+
 
         /* ----- Set the current PlanetStatus ----- */
 
         // Set default information
         foreach ($data['planetStatus'] as $planet) {
+
+            //$this->info($planet['index']);
 
             $planet['warId'] = $currentWarId;
             $planet['regenPerSecond'] = round($planet['regenPerSecond'], 4);
@@ -61,11 +66,17 @@ Artisan::command('fetch', function () {
                 $history->players == $planet['players']
             )) {
                 $history->touch();
+                $history->last_valid = Carbon::now()->getTimestamp();
             } else {
                 $c = Carbon::now()->getTimestamp();
                 $p = new PlanetHistory($planet);
                 $p->valid_start = $c;
-                $p->last_valid = $c;
+                $p->last_valid = null;
+
+                if ($history) $history->last_valid = $c - 1;
+
+                $p->save();
+                if ($history) $history->save();
             }
 
         }

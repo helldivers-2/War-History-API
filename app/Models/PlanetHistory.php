@@ -82,6 +82,8 @@ class PlanetHistory extends Model
         'health',
         'regenPerSecond',
         'players',
+        'valid_start',
+        'last_valid'
     ];
 
     protected $hidden = [

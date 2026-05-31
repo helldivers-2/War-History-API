@@ -45,6 +45,8 @@ Artisan::command('fetch', function () {
         // Set default information
         foreach ($data['planetStatus'] as $planet) {
 
+            //$this->info($planet['index']);
+
             $planet['warId'] = $currentWarId;
             $planet['regenPerSecond'] = round($planet['regenPerSecond'], 4);
 

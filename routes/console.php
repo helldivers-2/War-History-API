@@ -57,7 +57,9 @@ Artisan::command('fetch', function () {
             $planetModel->fill($planet);
             $planetModel->save();
 
-            $history = PlanetHistory::orderBy('updated_at', 'DESC')->where('index', $planet['index'])->first();
+            $history = PlanetHistory::orderBy('valid_start', 'DESC')->where('index', $planet['index'])->first();
+
+            $this->info(strval($history));
 
             if ($history && (
                 $history->owner == $planet['owner'] &&
@@ -67,7 +69,7 @@ Artisan::command('fetch', function () {
             )) {
                 $this->info('leave '.$planet['index']);
                 $history->touch();
-                $history->last_valid = 0;
+                //$history->last_valid = 0;
             } else {
 
                 $this->info('update '.$planet['index']);
